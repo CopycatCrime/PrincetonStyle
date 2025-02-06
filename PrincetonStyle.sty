@@ -34,40 +34,47 @@
 \newcounter{theorem}[section]
 \renewcommand{\thetheorem}{\arabic{section}.\arabic{theorem}}
 
-\newenvironment{dfn}{%
-  \refstepcounter{theorem}%
-  \par\noindent\textbf{定義 \thetheorem}~%
-}{\par}
+\newenvironment{dfn}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{定義 \thetheorem}~
+}{\par\vspace{1em}}
 
-\newenvironment{thm}{%
-  \refstepcounter{theorem}%
-  \par\noindent\textbf{定理 \thetheorem}~%
-}{\par}
+\newenvironment{thm}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{定理 \thetheorem}~
+}{\par\vspace{1em}}
 
-\newenvironment{cor}{%
-  \refstepcounter{theorem}%
-  \par\noindent\textbf{系 \thetheorem}~%
-}{\par}
+\newenvironment{cor}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{系 \thetheorem}~
+}{\par\vspace{1em}}
 
-\newenvironment{prop}{%
-  \refstepcounter{theorem}%
-  \par\noindent\textbf{命題 \thetheorem}~%
-}{\par}
+\newenvironment{prop}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{命題 \thetheorem}~
+}{\par\vspace{1em}}
 
-\newenvironment{lem}{%
-  \refstepcounter{theorem}%
-  \par\noindent\textbf{補題 \thetheorem}~%
-}{\par}
+\newenvironment{lem}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{補題 \thetheorem}~
+}{\par\vspace{1em}}
 
-\newenvironment{rem}{%
-  \refstepcounter{theorem}%
-  \par\noindent\textbf{注意 \thetheorem}~%
-}{\par}
+\newenvironment{rem}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{注意 \thetheorem}~
+}{\par\vspace{1em}}
 
-\newenvironment{fact}{%
-  \refstepcounter{theorem}%
-  \par\noindent\textbf{事実 \thetheorem}~%
-}{\par}
+\newenvironment{fact}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{事実 \thetheorem}~
+}{\par\vspace{1em}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ヘッダー・フッターのカスタムページスタイルの定義
@@ -77,7 +84,7 @@
 % 奇数ページはヘッダー右側に、偶数ページは左側にページ番号と章情報を表示
 \def\ps@myheadings{%
   \def\@oddhead{\hfill\leftmark\hspace{2em}\thepage}%
-  \def\@evenhead{\thepage\hspace{2em}\leftmark\hfill}%
+  \def\@evenhead{\thepage\hfill}%
   \def\@oddfoot{}%
   \def\@evenfoot{}%
 }
@@ -92,7 +99,7 @@
 % 目次ページでは、ページ番号を常に右上に表示する（左右同じ）
 \def\ps@tocstyle{%
   \def\@oddhead{\hfill\thepage}%
-  \def\@evenhead{\hfill\thepage}%
+  \def\@evenhead{\thepage\hfill}%
   \def\@oddfoot{}%
   \def\@evenfoot{}%
 }
@@ -129,15 +136,13 @@
 %  ・最初の章呼出時に、現在が奇数なら空ページを挿入して偶数ページから開始
 %  ・ページ番号をローマ→アラビアに切替え、ページ番号を1から再スタート
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\makeatletter
 \renewcommand{\chapter}[1]{%
-  \ifmainmatter\else%
+  \ifmainmatter
+    % 2章目以降：単に新ページから開始
     \clearpage%
-    \ifodd\value{page}%
-      \thispagestyle{empty}%
-      \null%
-      \newpage%
-    \fi%
+  \else
+    % 第1章：必ず右側（奇数ページ）から開始
+    \cleardoublepage%
     \pagenumbering{arabic}%
     \setcounter{page}{1}%
     \mainmattertrue%
@@ -149,8 +154,11 @@
   \thispagestyle{chapterstyle}%
   \par\bigskip\noindent%
   {\Large\bfseries 第\thechapter 章\quad #1}%
+  \vspace{5em}
   \par\medskip%
 }
+\makeatother
+
 \makeatother
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
