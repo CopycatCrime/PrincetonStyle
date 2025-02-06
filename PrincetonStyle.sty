@@ -1,0 +1,221 @@
+\NeedsTeXFormat{LaTeX2e}[2025/02/06]
+\ProvidesPackage{PrincetonStyle}[2025/02/06 Princeton Lectures in Analysis's style package]
+
+%------------------------------------------------
+% 全てのフォントを明朝体にする（XeLaTeXの場合）
+%------------------------------------------------
+\ifx\XeTeXrevision\undefined
+  % XeLaTeX以外の場合（pLaTeX等）には、既定の日本語フォントが明朝体になっている前提です。
+\else
+  \RequirePackage{xeCJK}
+  % IPAex明朝（IPAexMincho）を全フォントに設定
+  \setCJKmainfont{IPAexMincho}
+  \setCJKsansfont{IPAexMincho}
+  \setCJKmonofont{IPAexMincho}
+  \setmainfont{IPAexMincho}
+\fi
+
+%------------------------------------------------
+% 必要パッケージの読み込み
+%------------------------------------------------
+\RequirePackage{titlesec}
+\RequirePackage{tcolorbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 章・節・小節の番号付け（例：章は「第◯章」、節は「1.」、小節は「1.1.」）
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 定理環境の定義（定義、定理、系、命題、補題、注意、事実）
+% 全て、section毎の共通カウンターを使用
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{theorem}[section]
+\renewcommand{\thetheorem}{\arabic{section}.\arabic{theorem}}
+
+\newenvironment{dfn}{%
+  \refstepcounter{theorem}%
+  \par\noindent\textbf{定義 \thetheorem}~%
+}{\par}
+
+\newenvironment{thm}{%
+  \refstepcounter{theorem}%
+  \par\noindent\textbf{定理 \thetheorem}~%
+}{\par}
+
+\newenvironment{cor}{%
+  \refstepcounter{theorem}%
+  \par\noindent\textbf{系 \thetheorem}~%
+}{\par}
+
+\newenvironment{prop}{%
+  \refstepcounter{theorem}%
+  \par\noindent\textbf{命題 \thetheorem}~%
+}{\par}
+
+\newenvironment{lem}{%
+  \refstepcounter{theorem}%
+  \par\noindent\textbf{補題 \thetheorem}~%
+}{\par}
+
+\newenvironment{rem}{%
+  \refstepcounter{theorem}%
+  \par\noindent\textbf{注意 \thetheorem}~%
+}{\par}
+
+\newenvironment{fact}{%
+  \refstepcounter{theorem}%
+  \par\noindent\textbf{事実 \thetheorem}~%
+}{\par}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ヘッダー・フッターのカスタムページスタイルの定義
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+% 本文用ページスタイル (myheadings)：
+% 奇数ページはヘッダー右側に、偶数ページは左側にページ番号と章情報を表示
+\def\ps@myheadings{%
+  \def\@oddhead{\hfill\leftmark\hspace{2em}\thepage}%
+  \def\@evenhead{\thepage\hspace{2em}\leftmark\hfill}%
+  \def\@oddfoot{}%
+  \def\@evenfoot{}%
+}
+% 章タイトルページ用スタイル (chapterstyle)：ヘッダーはページ番号のみ
+\def\ps@chapterstyle{%
+  \def\@oddhead{\hfill\thepage}%
+  \def\@evenhead{\thepage\hfill}%
+  \def\@oddfoot{}%
+  \def\@evenfoot{}%
+}
+% 目次ページ用スタイル (tocstyle)：
+% 目次ページでは、ページ番号を常に右上に表示する（左右同じ）
+\def\ps@tocstyle{%
+  \def\@oddhead{\hfill\thepage}%
+  \def\@evenhead{\hfill\thepage}%
+  \def\@oddfoot{}%
+  \def\@evenfoot{}%
+}
+\makeatother
+
+% デフォルトのページスタイルは本文用（myheadings）
+\pagestyle{myheadings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 序文用環境 (prologue)：右寄せ・tcolorbox利用
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{prologue}{%
+  \begin{flushright}%
+    \begin{minipage}{0.75\textwidth}%
+      \begin{tcolorbox}[colframe=white, colback=gray!10, sharp corners, boxrule=0pt]%
+      \setlength{\parindent}{1zw}%
+}{%
+      \end{tcolorbox}%
+    \end{minipage}%
+  \end{flushright}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ページ番号の切替設定
+%  前半（目次・序文など）はローマ数字 (i, ii, …)
+%  \chapter 以降はアラビア数字 (1, 2, …) に切替
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{roman}
+\newif\ifmainmatter
+\mainmatterfalse
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \chapter の再定義
+%  ・最初の章呼出時に、現在が奇数なら空ページを挿入して偶数ページから開始
+%  ・ページ番号をローマ→アラビアに切替え、ページ番号を1から再スタート
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\renewcommand{\chapter}[1]{%
+  \ifmainmatter\else%
+    \clearpage%
+    \ifodd\value{page}%
+      \thispagestyle{empty}%
+      \null%
+      \newpage%
+    \fi%
+    \pagenumbering{arabic}%
+    \setcounter{page}{1}%
+    \mainmattertrue%
+  \fi%
+  \refstepcounter{chapter}%
+  \addcontentsline{toc}{chapter}{第\thechapter 章\quad #1}%
+  \renewcommand{\chaptermark}[1]{\markboth{第\thechapter 章\quad #1}{}}%
+  \chaptermark{#1}%
+  \thispagestyle{chapterstyle}%
+  \par\bigskip\noindent%
+  {\Large\bfseries 第\thechapter 章\quad #1}%
+  \par\medskip%
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 目次のカスタマイズ
+%  ・必ず偶数ページから開始（必要なら空ページを挿入）
+%  ・tocstyle を適用し、ドットリーダー付きのフォーマットで出力
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\renewcommand{\tableofcontents}{%
+  \clearpage%
+  \ifodd\value{page}%
+    \thispagestyle{empty}%
+    \null%
+    \newpage%
+  \fi%
+  \pagestyle{tocstyle}%
+  \thispagestyle{tocstyle}%
+  \vbox{%
+    {\Huge\bfseries 目次}%
+  }%
+  \vspace{8em}%
+  \begin{minipage}{\textwidth}%
+    \@starttoc{toc}%
+  \end{minipage}%
+}
+\renewcommand{\l@chapter}[2]{%
+  \vskip 1.5em%
+  \@dottedtocline{0}{0em}{3em}{\bfseries #1}{\bfseries #2}%
+}
+\renewcommand{\l@section}[2]{%
+  \@dottedtocline{1}{1.5em}{2em}{#1}{#2}%
+}
+\renewcommand{\l@subsection}[2]{%
+  \@dottedtocline{2}{3em}{3em}{#1}{#2}%
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% タイトルページ（\maketitle）のカスタマイズ
+%  ・タイトルを tcolorbox で際立たせる
+%  ・サブタイトル（定義されていれば）、著者、日付を表示
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\providecommand{\@subtitle}{} % \@subtitleが未定義の場合の対策
+\newcommand{\subtitle}[1]{\gdef\@subtitle{#1}}
+\renewcommand{\maketitle}{%
+  \begin{titlepage}%
+    \thispagestyle{empty}%
+    \vspace*{2cm}%
+    \begin{center}%
+      % タイトル部分：tcolorboxで囲んで存在感アップ
+      \begin{tcolorbox}[colback=gray!10, colframe=white, sharp corners, boxrule=0pt, width=\textwidth]%
+        {\Huge\bfseries \@title\par}%
+      \end{tcolorbox}%
+      \vskip 1cm%
+      % サブタイトル（定義されていれば）を表示
+      \ifx\@subtitle\@empty\else%
+        {\Large\itshape \@subtitle\par}%
+        \vskip 1cm%
+      \fi%
+      {\Large \@author\par}%
+      \vskip 1cm%
+      {\large \@date\par}%
+    \end{center}%
+    \vfill%
+  \end{titlepage}%
+}
+\makeatother
