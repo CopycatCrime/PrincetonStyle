@@ -52,7 +52,7 @@ PrincetonStyle.styは、本格的な数学書のようなスタイルに似せ�
 ドキュメントにパッケージを追加するには、次のコマンドを記述してください。
 
 ```latex
-\usepackage{princetonanalysis}
+\usepackage{PrincetonStyle}
 ```
 
 ### 定理・定義の使用
