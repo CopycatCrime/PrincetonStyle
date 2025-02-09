@@ -1,23 +1,14 @@
-\NeedsTeXFormat{LaTeX2e}[2025/02/06]
-\ProvidesPackage{PrincetonStyle}[2025/02/06 Princeton Lectures in Analysis's style package]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% princetonanalysis.sty
+%
+% Princeton解析学風スタイル
+% 2025/02/09
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProvidesPackage{princetonanalysis}[2025/02/09 Princeton Analysis Style]
 
-%------------------------------------------------
-% 全てのフォントを明朝体にする（XeLaTeXの場合）
-%------------------------------------------------
-\ifx\XeTeXrevision\undefined
-  % XeLaTeX以外の場合（pLaTeX等）には、既定の日本語フォントが明朝体になっている前提です。
-\else
-  \RequirePackage{xeCJK}
-  % IPAex明朝（IPAexMincho）を全フォントに設定
-  \setCJKmainfont{IPAexMincho}
-  \setCJKsansfont{IPAexMincho}
-  \setCJKmonofont{IPAexMincho}
-  \setmainfont{IPAexMincho}
-\fi
-
-%------------------------------------------------
-% 必要パッケージの読み込み
-%------------------------------------------------
+% --- 必要パッケージの読み込み ---
+\RequirePackage{fancyhdr}  % ヘッダ／フッタの再定義用
+\RequirePackage{etoolbox}  % コマンドパッチ用
 \RequirePackage{titlesec}
 \RequirePackage{tcolorbox}
 
@@ -76,37 +67,11 @@
   \par\noindent\textbf{事実 \thetheorem}~
 }{\par\vspace{1em}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ヘッダー・フッターのカスタムページスタイルの定義
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\makeatletter
-% 本文用ページスタイル (myheadings)：
-% 奇数ページはヘッダー右側に、偶数ページは左側にページ番号と章情報を表示
-\def\ps@myheadings{%
-  \def\@oddhead{\hfill\leftmark\hspace{2em}\thepage}%
-  \def\@evenhead{\thepage\hfill}%
-  \def\@oddfoot{}%
-  \def\@evenfoot{}%
-}
-% 章タイトルページ用スタイル (chapterstyle)：ヘッダーはページ番号のみ
-\def\ps@chapterstyle{%
-  \def\@oddhead{\hfill\thepage}%
-  \def\@evenhead{\thepage\hfill}%
-  \def\@oddfoot{}%
-  \def\@evenfoot{}%
-}
-% 目次ページ用スタイル (tocstyle)：
-% 目次ページでは、ページ番号を常に右上に表示する（左右同じ）
-\def\ps@tocstyle{%
-  \def\@oddhead{\hfill\thepage}%
-  \def\@evenhead{\thepage\hfill}%
-  \def\@oddfoot{}%
-  \def\@evenfoot{}%
-}
-\makeatother
-
-% デフォルトのページスタイルは本文用（myheadings）
-\pagestyle{myheadings}
+\newenvironment{example}{
+  \vspace{1em}
+  \refstepcounter{theorem}
+  \par\noindent\textbf{例 \thetheorem}~
+}{\par\vspace{1em}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 序文用環境 (prologue)：右寄せ・tcolorbox利用
@@ -122,68 +87,81 @@
   \end{flushright}%
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ページ番号の切替設定
-%  前半（目次・序文など）はローマ数字 (i, ii, …)
-%  \chapter 以降はアラビア数字 (1, 2, …) に切替
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\pagenumbering{roman}
-\newif\ifmainmatter
-\mainmatterfalse
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \chapter の再定義
-%  ・最初の章呼出時に、現在が奇数なら空ページを挿入して偶数ページから開始
-%  ・ページ番号をローマ→アラビアに切替え、ページ番号を1から再スタート
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\renewcommand{\chapter}[1]{%
-  \ifmainmatter
-    % 2章目以降：単に新ページから開始
-    \clearpage%
-  \else
-    % 第1章：必ず右側（奇数ページ）から開始
-    \cleardoublepage%
-    \pagenumbering{arabic}%
-    \setcounter{page}{1}%
-    \mainmattertrue%
-  \fi%
-  \refstepcounter{chapter}%
-  \addcontentsline{toc}{chapter}{第\thechapter 章\quad #1}%
-  \renewcommand{\chaptermark}[1]{\markboth{第\thechapter 章\quad #1}{}}%
-  \chaptermark{#1}%
-  \thispagestyle{chapterstyle}%
-  \par\bigskip\noindent%
-  {\Large\bfseries 第\thechapter 章\quad #1}%
-  \vspace{5em}
-  \par\medskip%
+% --- ページスタイルの設定 ---
+% 通常ページ用 (本分で使用するページスタイル)
+\fancypagestyle{princeton}{%
+  \fancyhf{}%
+  % 奇数ページ（右ページ）はヘッダ右側に「章名 + ページ番号」
+  \fancyhead[RO]{\leftmark\ \hspace{1em} \thepage}%
+  % 偶数ページ（左ページ）はヘッダ左側にページ番号のみ
+  \fancyhead[LE]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
 }
-\makeatother
 
-\makeatother
+% 章始ページ用 (章扉): ページ番号のみを出す
+\fancypagestyle{chapterstart}{%
+  \fancyhf{}%
+  % 右ページの場合：右上にページ番号、左ページの場合：左上にページ番号
+  \fancyhead[RO]{\thepage}%
+  \fancyhead[LE]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 目次のカスタマイズ
-%  ・必ず偶数ページから開始（必要なら空ページを挿入）
-%  ・tocstyle を適用し、ドットリーダー付きのフォーマットで出力
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --- 内部マクロの再定義 ---
 \makeatletter
-\renewcommand{\tableofcontents}{%
-  \clearpage%
-  \ifodd\value{page}%
-    \thispagestyle{empty}%
-    \null%
-    \newpage%
-  \fi%
-  \pagestyle{tocstyle}%
-  \thispagestyle{tocstyle}%
-  \vbox{%
-    {\Huge\bfseries 目次}%
+
+% ■ 章コマンドの再定義
+% 第1章（\c@chapter が 0 のとき）は必ず右側ページ（\cleardoublepage）から開始
+% それ以外は \clearpage。
+% また、章扉は chapterstart スタイルを使用。
+\renewcommand{\chapter}{%
+  \ifnum\c@chapter=0
+    \cleardoublepage % 第1章は右ページ強制
+  \else
+    \clearpage
+  \fi
+  \thispagestyle{chapterstart}%
+  \secdef\@chapter\@schapter
+}
+
+% ■ 章見出しのフォーマット
+% 出力例：「第1章　複素解析への序説」
+\def\@makechapterhead#1{%
+  {%
+    \parindent \z@ 
+    \raggedright 
+    \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \huge\bfseries 第\thechapter 章
+    \fi
+    \interlinepenalty\@M
+    \Huge \bfseries #1\par\nobreak
+    \vskip 40\p@% 見出し下の余白
   }%
-  \vspace{8em}%
+  \vspace{5em}
+}
+
+% ■ ヘッダ用の章名設定
+% デフォルトの \chaptermark は "Chapter 1. タイトル" のようになる場合があるため、
+% 「第1章 タイトル」という形に再定義
+\renewcommand{\chaptermark}[1]{%
+  \markboth{第\thechapter 章\ #1}{}%
+}
+
+% ■ 目次の再定義
+% 目次は右ページから開始し，ページ番号をローマ数字に変更
+\renewcommand{\tableofcontents}{%
+  \cleardoublepage
+  \pagenumbering{roman}%
+  \chapter*{\contentsname}%
   \begin{minipage}{\textwidth}%
     \@starttoc{toc}%
   \end{minipage}%
 }
+
+% ■ 目次中の章エントリの再定義（ドットリーダーなし・重ならない簡単配置）
 \renewcommand{\l@chapter}[2]{%
   \vskip 1.5em%
   \@dottedtocline{0}{0em}{3em}{\bfseries #1}{\bfseries #2}%
@@ -196,34 +174,12 @@
 }
 \makeatother
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% タイトルページ（\maketitle）のカスタマイズ
-%  ・タイトルを tcolorbox で際立たせる
-%  ・サブタイトル（定義されていれば）、著者、日付を表示
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\makeatletter
-\providecommand{\@subtitle}{} % \@subtitleが未定義の場合の対策
-\newcommand{\subtitle}[1]{\gdef\@subtitle{#1}}
-\renewcommand{\maketitle}{%
-  \begin{titlepage}%
-    \thispagestyle{empty}%
-    \vspace*{2cm}%
-    \begin{center}%
-      % タイトル部分：tcolorboxで囲んで存在感アップ
-      \begin{tcolorbox}[colback=gray!10, colframe=white, sharp corners, boxrule=0pt, width=\textwidth]%
-        {\Huge\bfseries \@title\par}%
-      \end{tcolorbox}%
-      \vskip 1cm%
-      % サブタイトル（定義されていれば）を表示
-      \ifx\@subtitle\@empty\else%
-        {\Large\itshape \@subtitle\par}%
-        \vskip 1cm%
-      \fi%
-      {\Large \@author\par}%
-      \vskip 1cm%
-      {\large \@date\par}%
-    \end{center}%
-    \vfill%
-  \end{titlepage}%
+% --- 文書開始時の設定 ---
+% 本文（main matter）のページ番号をアラビア数字にし、
+% ページスタイルを "princeton" にする。
+\AtBeginDocument{%
+  \pagestyle{princeton}%
 }
-\makeatother
+
+\endinput
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
