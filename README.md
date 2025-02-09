@@ -85,10 +85,6 @@ PrincetonStyle.styは、本格的な数学書のようなスタイルに似せ�
 
 本問題については、```\chapter{\hspace{1em}<章名>}```とすることで対処できますが、後のバージョンで修正する予定です。
 
-## ライセンス
-
-このパッケージはオープンソースライセンスの下で配布されています。自由に変更し、学術文書の作成に使用してください。
-
 ## Copyright
 
 copyright © 2025 CopycatCrime All Rights Reserved.
