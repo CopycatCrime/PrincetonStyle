@@ -116,12 +116,9 @@
 \makeatletter
 
 % ■ 章コマンドの再定義
-% 第1章（\c@chapter が 0 のとき）は必ず右側ページ（\cleardoublepage）から開始
-% それ以外は \clearpage。
-% また、章扉は chapterstart スタイルを使用。
 \renewcommand{\chapter}{%
   \ifnum\c@chapter=0
-    \cleardoublepage % 第1章は右ページ強制
+    \cleardoublepage
   \else
     \clearpage
   \fi
@@ -130,7 +127,6 @@
 }
 
 % ■ 章見出しのフォーマット
-% 出力例：「第1章　複素解析への序説」
 \def\@makechapterhead#1{%
   {%
     \parindent \z@ 
@@ -147,14 +143,11 @@
 }
 
 % ■ ヘッダ用の章名設定
-% デフォルトの \chaptermark は "Chapter 1. タイトル" のようになる場合があるため、
-% 「第1章 タイトル」という形に再定義
 \renewcommand{\chaptermark}[1]{%
   \markboth{第\thechapter 章\ #1}{}%
 }
 
 % ■ 目次の再定義
-% 目次は右ページから開始し，ページ番号をローマ数字に変更
 \renewcommand{\tableofcontents}{%
   \cleardoublepage
   \pagenumbering{roman}%
@@ -164,7 +157,7 @@
   \end{minipage}%
 }
 
-% ■ 目次中の章エントリの再定義（ドットリーダーなし・重ならない簡単配置）
+% ■ 目次中の章エントリの再定義
 \renewcommand{\l@chapter}[2]{%
   \vskip 1.5em%
   \@dottedtocline{0}{0em}{3em}{\bfseries #1}{\bfseries #2}%
@@ -180,8 +173,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --- 文書開始時の設定 ---
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 本文（main matter）のページ番号をアラビア数字にし、
-% ページスタイルを "princeton" にする。
 \AtBeginDocument{%
   \pagestyle{princeton}%
 }
