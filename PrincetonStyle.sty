@@ -1,26 +1,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% princetonanalysis.sty
-%
-% Princeton解析学風スタイル
 % 2025/02/09
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ProvidesPackage{princetonanalysis}[2025/02/09 Princeton Analysis Style]
+\ProvidesPackage{PrincetonStyle}[2025/02/09]
 
-% --- 必要パッケージの読み込み ---
-\RequirePackage{fancyhdr}  % ヘッダ／フッタの再定義用
-\RequirePackage{etoolbox}  % コマンドパッチ用
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 必要パッケージの読み込み 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage{fancyhdr}
+\RequirePackage{etoolbox}
 \RequirePackage{titlesec}
 \RequirePackage{tcolorbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 章・節・小節の番号付け（例：章は「第◯章」、節は「1.」、小節は「1.1.」）
+% 章・節・小節の番号付け
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\thesection}{\arabic{section}.}
-\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 定理環境の定義（定義、定理、系、命題、補題、注意、事実）
-% 全て、section毎の共通カウンターを使用
+% 定理環境の定義（定義、定理、系、命題、補題、注意、事実、例）
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcounter{theorem}[section]
 \renewcommand{\thetheorem}{\arabic{section}.\arabic{theorem}}
@@ -74,7 +72,7 @@
 }{\par\vspace{1em}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 序文用環境 (prologue)：右寄せ・tcolorbox利用
+% 序文用環境 (prologue)：右寄せ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newenvironment{prologue}{%
   \begin{flushright}%
@@ -87,7 +85,10 @@
   \end{flushright}%
 }
 
-% --- ページスタイルの設定 ---
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ページスタイルの設定
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 通常ページ用 (本分で使用するページスタイル)
 \fancypagestyle{princeton}{%
   \fancyhf{}%
@@ -109,7 +110,9 @@
   \renewcommand{\footrulewidth}{0pt}%
 }
 
-% --- 内部マクロの再定義 ---
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 内部マクロの再定義
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
 
 % ■ 章コマンドの再定義
@@ -174,7 +177,9 @@
 }
 \makeatother
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --- 文書開始時の設定 ---
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 本文（main matter）のページ番号をアラビア数字にし、
 % ページスタイルを "princeton" にする。
 \AtBeginDocument{%
